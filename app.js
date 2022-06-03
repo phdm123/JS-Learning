@@ -4,7 +4,7 @@ const submit = document.querySelector('#task-form');
 const newTask = document.querySelector('#task');
 const ul = document.querySelector('.collection');
 const clearTask = document.querySelector('.clear-tasks');
-const localStoragePersistence = JSON.parse(localStorage.getItem('tasks'));
+let localStoragePersistence = JSON.parse(localStorage.getItem('tasks'));
 
 //Persistência localStorage
 if(localStoragePersistence !== null){
@@ -51,15 +51,19 @@ function addTask(e){
 }
 
 function addLocalStorage(e){
-    let storage;
-    if(localStorage.getItem('tasks') === null){
-        storage = [];
+    if(newTask.value === ''){
+        e.preventDefault();
+        return;
     }
-    else{
-        storage = JSON.parse(localStorage.getItem('tasks'));
+
+    if(localStoragePersistence === null){ //Nenhuma task foi adicionada ainda.
+        localStoragePersistence = [];
+        localStoragePersistence.push(newTask.value);
     }
-    storage.push(newTask.value);
-    localStorage.setItem('tasks', JSON.stringify(storage));
+    else{ //Alguma task existe ou existiu.
+        localStoragePersistence.push(newTask.value);
+    }
+    localStorage.setItem('tasks', JSON.stringify(localStoragePersistence));
     e.preventDefault();
 }
 
@@ -69,31 +73,29 @@ function deleteAll(e){
         li.remove();
     });
     alert("Removing all tasks.");
-    localStorage.clear();
+    localStoragePersistence = []; //Mantendo localStoragePersistence igual ao localStorage.
+    localStorage.setItem('tasks', JSON.stringify(localStoragePersistence));
     e.preventDefault();
 }
 
 function deleteTask(e){
     if(e.target.classList.contains('delete-item')){ //Caso clique um pouco abaixo do x.
-        const textValue = e.target.parentElement.parentElement.textContent;
-        for(let i = 0; i < localStoragePersistence.lenght; i++){
-            if(textValue === localStoragePersistence[i].textContent){
-                localStoragePersistence.splice(i, 1);
-                console.log(localStoragePersistence);
-            }
-        }
+        //Criando um array de todas as tasks inseridas.
+        const childrenArray = Array.from(ul.children);
+        
+        //Removendo a task clicada pelo índice.
+        localStoragePersistence.splice(childrenArray.indexOf(e.target.parentElement), 1);
+        localStorage.setItem('tasks', JSON.stringify(localStoragePersistence));
         e.target.parentElement.remove();
-        localStorage.setItem('tasks',JSON.stringify(localStoragePersistence));
+
     } else if(e.target.parentElement.classList.contains('delete-item')){
-        const textValue = e.target.parentElement.parentElement.textContent;
-        for(let i = 0; i < localStoragePersistence.lenght; i++){
-            if(textValue === localStoragePersistence[i].textContent){
-                localStoragePersistence.splice(i, 1);
-                console.log(localStoragePersistence);
-            }
-        }
+        //Criando um array de todas as tasks inseridas.
+        const childrenArray = Array.from(ul.children);
+        
+        //Removendo a task clicada pelo índice.
+        localStoragePersistence.splice(childrenArray.indexOf(e.target.parentElement.parentElement), 1);
+        localStorage.setItem('tasks', JSON.stringify(localStoragePersistence));
         e.target.parentElement.parentElement.remove();
-        localStorage.setItem('tasks',JSON.stringify(localStoragePersistence));
     }
 }
 
