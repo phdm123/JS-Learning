@@ -4,6 +4,7 @@ const submit = document.querySelector('#task-form');
 const newTask = document.querySelector('#task');
 const ul = document.querySelector('.collection');
 const clearTask = document.querySelector('.clear-tasks');
+const filter = document.querySelector('#filter');
 let localStoragePersistence = JSON.parse(localStorage.getItem('tasks'));
 
 //Persistência localStorage
@@ -98,9 +99,22 @@ function deleteTask(e){
         e.target.parentElement.parentElement.remove();
     }
 }
+function filterTasks(e){
+    const text = e.target.value.toLowerCase();
+    // console.log(document.querySelectorAll('.collection-item'))
+    document.querySelectorAll('.collection-item').forEach(function(task) {
+        if (task.textContent.toLowerCase().indexOf(text) !== -1) {
+            task.style.display = 'block';
+        } else {
+            task.style.display = 'none';
+        }
+    }) 
+       
+}
 
 //Eventos
 submit.addEventListener('submit', addLocalStorage); //Has to be first because of newTask.value reset in addTask function.
 submit.addEventListener('submit', addTask);
 clearTask.addEventListener('click', deleteAll);
 ul.addEventListener('click', deleteTask);
+filter.addEventListener('keyup', filterTasks);
